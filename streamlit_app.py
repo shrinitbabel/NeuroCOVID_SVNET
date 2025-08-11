@@ -2,15 +2,32 @@ import streamlit as st
 import json
 import plotly.graph_objects as go
 
-# Title
-st.set_page_config(page_title="NeuroCOVID Network Navigator")
+# ————————————————————————————————
+# Streamlit page setup
+st.set_page_config(
+    page_title="NeuroCOVID Network Navigator",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
+st.markdown(
+    """
+    <style>
+      /* make the background pure white */
+      .reportview-container, .main .block-container {
+        background-color: #FFFFFF;
+      }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 st.title("NeuroCOVID Network Navigator")
 
-# Load the exported SVNet JSON
+# ————————————————————————————————
+# Load the SVNet JSON
 with open("neurocovid_svnet.json") as f:
     fig_dict = json.load(f)
 
-# 1) Remove the potentially invalid 'template' key
+# drop the old template
 fig_dict["layout"].pop("template", None)
 
 # 2) Full mapping from internal codes → human labels
@@ -75,40 +92,54 @@ label_map = {
     "com_neurm_ty_myop":      "Myopathy",
 }
 
-# 3) Remap the text in each node trace, and
-#    bump up edge thickness + darkness
+# relabel nodes and strengthen edges
 for trace in fig_dict["data"]:
-    mode = trace.get("mode", "")
-    if mode == "markers+text" and "text" in trace:
+    if trace.get("mode") == "markers+text":
         trace["text"] = [label_map.get(t, t) for t in trace["text"]]
+        # make the markers slightly larger and darker border
+        trace["marker"].update(size=10, line=dict(width=1, color="#222"))
+        trace["textfont"].update(color="#111", size=10)
+    elif trace.get("mode") == "lines":
+        trace["line"].update(width=1.5, color="rgba(50,50,50,0.3)")
 
-    if mode == "lines":
-        # thicker, darker lines
-        trace["line"]["width"] = 2
-        trace["line"]["color"] = "#555"  
-        # optional: slightly more opaque
-        trace["opacity"] = 0.8
-
-# 4) Hide grid & backgrounds, set a light-blue scene background
+# ————————————————————————————————
+# Tidy up axes + scene background gradient
 scene = fig_dict["layout"].get("scene", {})
-for ax in ("xaxis", "yaxis", "zaxis"):
+for ax in ("xaxis","yaxis","zaxis"):
     if ax in scene:
         scene[ax].update(
-            showticklabels=False,
-            showbackground=False,
-            showgrid=False,
-            zeroline=False,
-            title_text=""
+            showgrid=False, zeroline=False,
+            showticklabels=False, title_text=""
         )
-# a solid light-blue backdrop:
-scene.update(bgcolor="lightblue")
 
-# 5) Finally set the paper / plot background to a matching tint
-fig = go.Figure(fig_dict)
-fig.update_layout(
-    paper_bgcolor="aliceblue",
-    plot_bgcolor="lightblue",
-    margin=dict(l=0, r=0, t=40, b=0)
+# apply a light vertical gradient from white→paleblue
+scene.update(
+    bgcolor="rgba(245, 252, 255, 1)",
+    camera=dict(eye=dict(x=1.5, y=1.5, z=1.2))
 )
 
+# ————————————————————————————————
+# Modernize legend: semi-opaque white box floating over the graph
+layout = fig_dict["layout"]
+layout.update(
+    paper_bgcolor="white",
+    plot_bgcolor="rgba(0,0,0,0)",  # transparent, let scene show
+    legend=dict(
+        bgcolor="rgba(255,255,255,0.8)",
+        bordercolor="#DDD",
+        borderwidth=1,
+        x=0.02, y=0.98
+    ),
+    margin=dict(l=0,r=0,t=60,b=0),
+    title=dict(
+        text="Interactive SVNet of Neurological Comorbidities",
+        x=0.5,
+        xanchor="center",
+        font=dict(size=18, color="#222")
+    )
+)
+
+# ————————————————————————————————
+# Render
+fig = go.Figure(fig_dict)
 st.plotly_chart(fig, use_container_width=True)
