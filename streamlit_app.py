@@ -2,8 +2,8 @@ import streamlit as st
 import json
 import plotly.graph_objects as go
 
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# 1) Page & global CSS
+# —————————————————————————————————————————————————————————————————————
+# 1) Page setup with animated gradient background
 st.set_page_config(
     page_title="NeuroCOVID Network Navigator",
     layout="wide",
@@ -13,36 +13,41 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    /* Animated vertical gradient */
+    /* slower vertical animation over a taller gradient */
     @keyframes gradientBG {
-      0%   { background-position: 0%   0%; }
-      50%  { background-position: 0% 100%; }
-      100% { background-position: 0%   0%; }
+        0%   { background-position: 0%   0%; }
+        50%  { background-position: 0% 100%; }
+        100% { background-position: 0%   0%; }
     }
     div[data-testid="stAppViewContainer"] {
-      background: linear-gradient(0deg, #b9f5fd 0%, #cff9fe 50%, #e6fcff 100%);
-      background-size: 100% 400%;
-      animation: gradientBG 30s ease infinite;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+        background: linear-gradient(
+        0deg,
+        #b9f5fd 0%,
+        #cff9fe 33%,
+        #e6fcff 66%,
+        #f0fdff 100%
+        );
+        /* make the gradient 4× taller so you only ever see a gentle shift */
+        background-size: 100% 400%;
+        animation: gradientBG 30s ease infinite;
     }
-    /* Transparent Streamlit chrome */
+    div[data-testid="stAppContainer"] {
+        background: transparent;
+    }
     header, footer, div[data-testid="stToolbar"] {
-      background: transparent !important;
+        background: transparent !important;
     }
     </style>
     """,
     unsafe_allow_html=True
 )
 
+
+
 st.title("NeuroCOVID Network Navigator")
 
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# 2) Zoom slider
-zoom = st.sidebar.slider("Zoom level", min_value=0.5, max_value=2.0, value=1.0, step=0.05,
-                         help="Use this to zoom into the network")
-
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# 3) Load & prep figure
+# —————————————————————————————————————————————————————————————————————
+# 2) Load & prep the SVNet JSON
 with open("neurocovid_svnet.json") as f:
     fig_dict = json.load(f)
 fig_dict["layout"].pop("template", None)
@@ -118,26 +123,18 @@ for trace in fig_dict["data"]:
         tf = trace.setdefault("textfont", {})
         tf.update(color="#111", size=11)
     elif mode == "lines":
+        # much darker, thicker connections
         trace["line"].update(width=2.5, color="rgba(30,30,30,0.7)")
 
-# hide axes & grid
+# hide grids & axes
 scene = fig_dict["layout"].get("scene", {})
 for ax in ("xaxis","yaxis","zaxis"):
-    scene.get(ax, {}).update(
-        showgrid=False, zeroline=False,
-        showticklabels=False, title_text=""
-    )
+    scene.get(ax, {}).update(showgrid=False, zeroline=False,
+                             showticklabels=False, title_text="")
+scene.update(bgcolor="rgba(0,0,0,0)",  # fully transparent
+             camera=dict(eye=dict(x=1.5, y=1.5, z=1.2)))
 
-# adjust camera distance by zoom
-base_eye = dict(x=1.5, y=1.5, z=1.2)
-scene.update(
-    bgcolor="rgba(0,0,0,0)",
-    camera=dict(
-        eye={k: base_eye[k] / zoom for k in base_eye}
-    )
-)
-
-# legend & background transparency
+# legend + plot transparent
 layout = fig_dict["layout"]
 layout.update(
     paper_bgcolor="rgba(0,0,0,0)",
@@ -156,7 +153,7 @@ layout.update(
     )
 )
 
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# 4) Render
+# —————————————————————————————————————————————————————————————————————
+# 3) Render!
 fig = go.Figure(fig_dict)
 st.plotly_chart(fig, use_container_width=True, theme=None)
