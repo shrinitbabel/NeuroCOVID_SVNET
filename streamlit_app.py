@@ -173,3 +173,56 @@ layout.update(
 # 4) Render
 fig = go.Figure(fig_dict)
 st.plotly_chart(fig, use_container_width=True, theme=None)
+
+# --- after your st.plotly_chart(...) call ---
+
+# 5) Methodology & Key Findings (fancy Apple-style panel)
+st.markdown(
+    """
+    <style>
+      /* A thin, elegant card for the text */
+      .methodology-card {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-weight: 300;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        color: #111;
+        background: rgba(255,255,255,0.8);
+        border-radius: 8px;
+        padding: 16px;
+        margin-top: 24px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      }
+      .methodology-card h4 {
+        margin-top: 0;
+        font-size: 1.1rem;
+        font-weight: 500;
+      }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+with st.expander("📖 About this Visualization & Key Findings", expanded=False):
+    st.markdown(
+        """
+        <div class="methodology-card">
+          <h4>How it was made</h4>
+          We extracted a 3D structural network (“SVNet”) of neurological comorbidities in COVID-19 patients using community detection (six modules) over co-occurrence data.  
+          Nodes represent diagnostic categories, edges their co-occurrence strength. Plotly’s `scatter3d` was exported via SVNet → JSON → re-styled in Streamlit.
+
+          <h4>Key Insights</h4>
+          - **Community 1** clusters primarily encephalopathies and seizures.  
+          - **Community 2** is dominated by demyelinating & vascular events.  
+          - **Community 3** picks up chronic pain & psychiatric features.  
+          - **Community 4** highlights movement disorders & CNS infections.  
+          - Rare “outliers” (NMJ, myopathy) form isolated modules.
+
+          <h4>Usage</h4>
+          • Hover or rotate to explore sub-structures.  
+          • Zoom & pan to inspect tight clusters.
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
