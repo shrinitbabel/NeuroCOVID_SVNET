@@ -48,12 +48,17 @@ st.markdown(
 
 # —————————————————————————————————————————————————————————————————————
 # 2) Subtitle—make it big and centered
+# … earlier code …
+
+# —————————————————————————————————————————————————————————————————————
+# 2) Subtitle—make it thin, large and centered
 st.markdown(
     """
     <h2 style="
       text-align: center;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       font-size: 2.4rem;
+      font-weight: 300;           /* ← make it thin */
       color: #111;
       margin-bottom: 1rem;
     ">
@@ -62,6 +67,8 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
+# … rest of your code …
 
 # —————————————————————————————————————————————————————————————————————
 # 3) Load & prep the SVNet JSON
