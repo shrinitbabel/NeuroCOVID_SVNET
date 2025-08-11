@@ -3,6 +3,7 @@ import json
 import plotly.graph_objects as go
 
 # —————————————————————————————————————————————————————————————————————
+# —————————————————————————————————————————————————————————————————————
 # 1) Page setup with animated gradient + Apple-style font
 st.set_page_config(
     page_title="NeuroCOVID Network Navigator",
@@ -13,12 +14,14 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-      /* Apple system font stack */
-      body, .css-18e3th9, .css-1d391kg, .css-ffhzg2 {
+      /* 1a) Apply SF-Pro / system font to everything */
+      body, h1, h2, h3, h4, h5, h6,
+      .css-18e3th9, .css-1d391kg, .css-ffhzg2,
+      div[data-testid="stMarkdownContainer"] {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
                      Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif !important;
       }
-      /* slower vertical animation over a taller gradient */
+      /* 1b) Animated gradient backdrop */
       @keyframes gradientBG {
         0%   { background-position: 0%   0%; }
         50%  { background-position: 0% 100%; }
@@ -32,7 +35,8 @@ st.markdown(
         background-size: 100% 400%;
         animation: gradientBG 30s ease infinite;
       }
-      div[data-testid="stAppContainer"], header, footer, div[data-testid="stToolbar"] {
+      div[data-testid="stAppContainer"],
+      header, footer, div[data-testid="stToolbar"] {
         background: transparent !important;
       }
     </style>
@@ -40,6 +44,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# This will now style st.title(...) as well:
 st.title("NeuroCOVID Network Navigator")
 
 # —————————————————————————————————————————————————————————————————————
@@ -116,10 +121,16 @@ for trace in fig_dict["data"]:
     if mode == "markers+text":
         trace["text"] = [label_map.get(t, t) for t in trace["text"]]
         trace["marker"].update(size=10, line=dict(width=1, color="#111"))
+        # force the family here:
         tf = trace.setdefault("textfont", {})
-        tf.update(color="#111", size=11, family="-apple-system, BlinkMacSystemFont")
+        tf.update(
+            family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+            color="#111",
+            size=11
+        )
     elif mode == "lines":
         trace["line"].update(width=2.5, color="rgba(30,30,30,0.7)")
+
 
 # hide grids & axes
 scene = fig_dict["layout"].get("scene", {})
