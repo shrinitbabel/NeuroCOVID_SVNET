@@ -3,7 +3,7 @@ import json
 import plotly.graph_objects as go
 
 # —————————————————————————————————————————————————————————————————————
-# 1) Page setup with animated gradient background
+# 1) Page setup with animated gradient + Apple-style font
 st.set_page_config(
     page_title="NeuroCOVID Network Navigator",
     layout="wide",
@@ -13,36 +13,32 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    /* slower vertical animation over a taller gradient */
-    @keyframes gradientBG {
+      /* Apple system font stack */
+      body, .css-18e3th9, .css-1d391kg, .css-ffhzg2 {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                     Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif !important;
+      }
+      /* slower vertical animation over a taller gradient */
+      @keyframes gradientBG {
         0%   { background-position: 0%   0%; }
         50%  { background-position: 0% 100%; }
         100% { background-position: 0%   0%; }
-    }
-    div[data-testid="stAppViewContainer"] {
+      }
+      div[data-testid="stAppViewContainer"] {
         background: linear-gradient(
-        0deg,
-        #b9f5fd 0%,
-        #cff9fe 33%,
-        #e6fcff 66%,
-        #f0fdff 100%
+          0deg,
+          #b9f5fd 0%, #cff9fe 33%, #e6fcff 66%, #f0fdff 100%
         );
-        /* make the gradient 4× taller so you only ever see a gentle shift */
         background-size: 100% 400%;
         animation: gradientBG 30s ease infinite;
-    }
-    div[data-testid="stAppContainer"] {
-        background: transparent;
-    }
-    header, footer, div[data-testid="stToolbar"] {
+      }
+      div[data-testid="stAppContainer"], header, footer, div[data-testid="stToolbar"] {
         background: transparent !important;
-    }
+      }
     </style>
     """,
     unsafe_allow_html=True
 )
-
-
 
 st.title("NeuroCOVID Network Navigator")
 
@@ -121,39 +117,48 @@ for trace in fig_dict["data"]:
         trace["text"] = [label_map.get(t, t) for t in trace["text"]]
         trace["marker"].update(size=10, line=dict(width=1, color="#111"))
         tf = trace.setdefault("textfont", {})
-        tf.update(color="#111", size=11)
+        tf.update(color="#111", size=11, family="-apple-system, BlinkMacSystemFont")
     elif mode == "lines":
-        # much darker, thicker connections
         trace["line"].update(width=2.5, color="rgba(30,30,30,0.7)")
 
 # hide grids & axes
 scene = fig_dict["layout"].get("scene", {})
 for ax in ("xaxis","yaxis","zaxis"):
-    scene.get(ax, {}).update(showgrid=False, zeroline=False,
-                             showticklabels=False, title_text="")
-scene.update(bgcolor="rgba(0,0,0,0)",  # fully transparent
-             camera=dict(eye=dict(x=1.5, y=1.5, z=1.2)))
+    scene.get(ax, {}).update(
+        showgrid=False, zeroline=False,
+        showticklabels=False, title_text=""
+    )
+scene.update(
+    bgcolor="rgba(0,0,0,0)",
+    camera=dict(eye=dict(x=1.5, y=1.5, z=1.2))
+)
 
-# legend + plot transparent
+# —————————————————————————————————————————————————————————————————————
+# 3) Global Plotly font settings + transparent backgrounds
 layout = fig_dict["layout"]
 layout.update(
+    font=dict(
+        family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        color="#111"
+    ),
+    title=dict(
+        text="Interactive SVNet of Neurological Comorbidities",
+        x=0.5, xanchor="center",
+        font=dict(size=20)
+    ),
     paper_bgcolor="rgba(0,0,0,0)",
     plot_bgcolor="rgba(0,0,0,0)",
     legend=dict(
         bgcolor="rgba(255,255,255,0.6)",
         bordercolor="#CCC",
         borderwidth=1,
-        x=0.02, y=0.98
+        x=0.02, y=0.98,
+        font=dict(size=12)
     ),
-    margin=dict(l=0, r=0, t=60, b=0),
-    title=dict(
-        text="Interactive SVNet of Neurological Comorbidities",
-        x=0.5, xanchor="center",
-        font=dict(size=20, color="#111")
-    )
+    margin=dict(l=0, r=0, t=60, b=0)
 )
 
 # —————————————————————————————————————————————————————————————————————
-# 3) Render!
+# 4) Render
 fig = go.Figure(fig_dict)
 st.plotly_chart(fig, use_container_width=True, theme=None)
