@@ -210,7 +210,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-with st.expander("📖 About this Visualization & Key Findings", expanded=False):
+with st.expander("About this Visualization & Key Findings", expanded=False):
     st.markdown(
         """
         <div class="methodology-card">
