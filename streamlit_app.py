@@ -13,26 +13,30 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-      /* Keyframes for a subtle animated vertical gradient */
-      @keyframes gradientBG {
+    /* slower vertical animation over a taller gradient */
+    @keyframes gradientBG {
         0%   { background-position: 0%   0%; }
         50%  { background-position: 0% 100%; }
         100% { background-position: 0%   0%; }
-      }
-      /* Full-page app container */
-      div[data-testid="stAppViewContainer"] {
-        background: linear-gradient(0deg, #b9f5fd, #cff9fe, #e6fcff);
-        background-size: 100% 200%;
-        animation: gradientBG 10s ease infinite;
-      }
-      /* Main block inside the app */
-      div[data-testid="stAppContainer"] {
+    }
+    div[data-testid="stAppViewContainer"] {
+        background: linear-gradient(
+        0deg,
+        #b9f5fd 0%,
+        #cff9fe 33%,
+        #e6fcff 66%,
+        #f0fdff 100%
+        );
+        /* make the gradient 4× taller so you only ever see a gentle shift */
+        background-size: 100% 400%;
+        animation: gradientBG 30s ease infinite;
+    }
+    div[data-testid="stAppContainer"] {
         background: transparent;
-      }
-      /* Make header & footer transparent */
-      header, footer, div[data-testid="stToolbar"] {
+    }
+    header, footer, div[data-testid="stToolbar"] {
         background: transparent !important;
-      }
+    }
     </style>
     """,
     unsafe_allow_html=True
