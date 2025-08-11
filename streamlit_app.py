@@ -153,7 +153,7 @@ layout.update(
         color="#111"
     ),
     title=dict(
-        text="Interactive SVNet of Neurological Comorbidities",
+        text="Interactive SVNet of Neurological Comorbidities in COVID-19",
         x=0.5, xanchor="center",
         font=dict(size=20)
     ),
