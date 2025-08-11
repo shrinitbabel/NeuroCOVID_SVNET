@@ -21,34 +21,20 @@ st.markdown(
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
                      Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif !important;
       }
-
-      /* 1b) Force the H1 (st.title) into a light weight */
-      .css-1v3fvcr.e1fqkh3o h1,
-      .css-18e3th9 {
-        font-weight: 300 !important;
-      }
-
-      /* 2) Keyframes for a subtle animated vertical gradient */
+      /* 1b) Animated gradient backdrop */
       @keyframes gradientBG {
         0%   { background-position: 0%   0%; }
         50%  { background-position: 0% 100%; }
         100% { background-position: 0%   0%; }
       }
-
-      /* 3) Full-page app container uses that gradient */
       div[data-testid="stAppViewContainer"] {
         background: linear-gradient(
           0deg,
-          #b9f5fd 0%,
-          #cff9fe 33%,
-          #e6fcff 66%,
-          #f0fdff 100%
-        ) !important;
-        background-size: 100% 400% !important;
-        animation: gradientBG 30s ease infinite !important;
+          #b9f5fd 0%, #cff9fe 33%, #e6fcff 66%, #f0fdff 100%
+        );
+        background-size: 100% 400%;
+        animation: gradientBG 30s ease infinite;
       }
-
-      /* 4) Make inner container, header, footer & toolbar transparent */
       div[data-testid="stAppContainer"],
       header, footer, div[data-testid="stToolbar"] {
         background: transparent !important;
