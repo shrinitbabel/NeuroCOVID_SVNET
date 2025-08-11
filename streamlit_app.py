@@ -13,28 +13,31 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-      /* fullscreen static gradient */
-      .reportview-container, .main .block-container {
-        /* static gradient: change the colors as you like */
-        background: linear-gradient(0deg, #b9f5fd, #cff9fe, #e6fcff) !important;
-      }
-      /* — or for a subtle vertical animated gradient — */
+      /* Keyframes for a subtle animated vertical gradient */
       @keyframes gradientBG {
         0%   { background-position: 0%   0%; }
         50%  { background-position: 0% 100%; }
         100% { background-position: 0%   0%; }
       }
-      .reportview-container, .main .block-container {
-        background: linear-gradient(0deg, #b9f5fd, #cff9fe, #e6fcff) !important;
-        background-size: 100% 200% !important;
-        animation: gradientBG 8s ease infinite !important;
+      /* Full-page app container */
+      div[data-testid="stAppViewContainer"] {
+        background: linear-gradient(0deg, #b9f5fd, #cff9fe, #e6fcff);
+        background-size: 100% 200%;
+        animation: gradientBG 10s ease infinite;
       }
-      /* make header/footer transparent */
-      header, footer, .css-1avcm0n { background: transparent !important; }
+      /* Main block inside the app */
+      div[data-testid="stAppContainer"] {
+        background: transparent;
+      }
+      /* Make header & footer transparent */
+      header, footer, div[data-testid="stToolbar"] {
+        background: transparent !important;
+      }
     </style>
     """,
     unsafe_allow_html=True
 )
+
 
 
 st.title("NeuroCOVID Network Navigator")
