@@ -13,23 +13,29 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    /* full-screen animated gradient */
-    @keyframes gradientBG {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-    .reportview-container, .main .block-container {
-      background: linear-gradient(-45deg, #e0f7fa, #80deea, #4dd0e1, #26c6da);
-      background-size: 400% 400%;
-      animation: gradientBG 15s ease infinite;
-    }
-    /* make the Streamlit header area transparent */
-    header, footer, .css-1avcm0n { background: transparent !important; }
+      /* fullscreen static gradient */
+      .reportview-container, .main .block-container {
+        /* static gradient: change the colors as you like */
+        background: linear-gradient(0deg, #b9f5fd, #cff9fe, #e6fcff) !important;
+      }
+      /* — or for a subtle vertical animated gradient — */
+      @keyframes gradientBG {
+        0%   { background-position: 0%   0%; }
+        50%  { background-position: 0% 100%; }
+        100% { background-position: 0%   0%; }
+      }
+      .reportview-container, .main .block-container {
+        background: linear-gradient(0deg, #b9f5fd, #cff9fe, #e6fcff) !important;
+        background-size: 100% 200% !important;
+        animation: gradientBG 8s ease infinite !important;
+      }
+      /* make header/footer transparent */
+      header, footer, .css-1avcm0n { background: transparent !important; }
     </style>
     """,
     unsafe_allow_html=True
 )
+
 
 st.title("NeuroCOVID Network Navigator")
 
