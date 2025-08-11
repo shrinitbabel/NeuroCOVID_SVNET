@@ -198,6 +198,13 @@ st.markdown(
         font-size: 1.1rem;
         font-weight: 500;
       }
+      .methodology-card ul {
+        padding-left: 1.2em;
+        margin: 0.5em 0;
+      }
+      .methodology-card li {
+        margin-bottom: 0.4em;
+      }
     </style>
     """,
     unsafe_allow_html=True
@@ -208,21 +215,24 @@ with st.expander("📖 About this Visualization & Key Findings", expanded=False)
         """
         <div class="methodology-card">
           <h4>How it was made</h4>
-          We extracted a 3D structural network (“SVNet”) of neurological comorbidities in COVID-19 patients using community detection (six modules) over co-occurrence data.  
-          Nodes represent diagnostic categories, edges their co-occurrence strength. Plotly’s `scatter3d` was exported via SVNet → JSON → re-styled in Streamlit.
+          <p>We extracted a 3D structural network (“SVNet”) of neurological comorbidities in COVID-19 patients using community detection (six modules) over co-occurrence data.  
+          Nodes represent diagnostic categories; edges their co-occurrence strength. Plotly’s <code>scatter3d</code> was exported via SVNet → JSON → re-styled in Streamlit.</p>
 
           <h4>Key Insights</h4>
-          - **Community 1** clusters primarily encephalopathies and seizures.  
-          - **Community 2** is dominated by demyelinating & vascular events.  
-          - **Community 3** picks up chronic pain & psychiatric features.  
-          - **Community 4** highlights movement disorders & CNS infections.  
-          - Rare “outliers” (NMJ, myopathy) form isolated modules.
+          <ul>
+            <li><strong>Community 1</strong> clusters primarily encephalopathies & seizures.</li>
+            <li><strong>Community 2</strong> is dominated by demyelinating & vascular events.</li>
+            <li><strong>Community 3</strong> picks up chronic pain & psychiatric features.</li>
+            <li><strong>Community 4</strong> highlights movement disorders & CNS infections.</li>
+            <li>Rare “outliers” (NMJ, myopathy) form isolated modules.</li>
+          </ul>
 
           <h4>Usage</h4>
-          • Hover or rotate to explore sub-structures.  
-          • Zoom & pan to inspect tight clusters.
+          <ul>
+            <li>Hover or rotate to explore sub-structures.</li>
+            <li>Zoom & pan to inspect tight clusters.</li>
+          </ul>
         </div>
         """,
         unsafe_allow_html=True
     )
-
