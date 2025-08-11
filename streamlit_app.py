@@ -3,7 +3,6 @@ import json
 import plotly.graph_objects as go
 
 # —————————————————————————————————————————————————————————————————————
-# —————————————————————————————————————————————————————————————————————
 # 1) Page setup with animated gradient + Apple-style font
 st.set_page_config(
     page_title="NeuroCOVID Network Navigator",
@@ -14,14 +13,14 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-      /* 1a) Apply SF-Pro / system font to everything */
+      /* Apply SF-Pro / system font */
       body, h1, h2, h3, h4, h5, h6,
       .css-18e3th9, .css-1d391kg, .css-ffhzg2,
       div[data-testid="stMarkdownContainer"] {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
                      Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif !important;
       }
-      /* 1b) Animated gradient backdrop */
+      /* Animated gradient backdrop */
       @keyframes gradientBG {
         0%   { background-position: 0%   0%; }
         50%  { background-position: 0% 100%; }
@@ -39,19 +38,37 @@ st.markdown(
       header, footer, div[data-testid="stToolbar"] {
         background: transparent !important;
       }
+
+      /* Hide the default bold title */
+      .css-1d391kg h1 { display: none; }
     </style>
     """,
     unsafe_allow_html=True
 )
 
-# This will now style st.title(...) as well:
-st.title("NeuroCOVID Network Navigator")
+# —————————————————————————————————————————————————————————————————————
+# 2) Subtitle—make it big and centered
+st.markdown(
+    """
+    <h2 style="
+      text-align: center;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 2.4rem;
+      color: #111;
+      margin-bottom: 1rem;
+    ">
+      Interactive SVNet of Neurological Comorbidities in COVID-19
+    </h2>
+    """,
+    unsafe_allow_html=True
+)
 
 # —————————————————————————————————————————————————————————————————————
-# 2) Load & prep the SVNet JSON
+# 3) Load & prep the SVNet JSON
 with open("neurocovid_svnet.json") as f:
     fig_dict = json.load(f)
 fig_dict["layout"].pop("template", None)
+
 
 
 # 2) Full mapping from internal codes → human labels
@@ -116,21 +133,22 @@ label_map = {
     "com_neurm_ty_myop":      "Myopathy",
 }
 
+# relabel nodes & style edges
 for trace in fig_dict["data"]:
     mode = trace.get("mode")
     if mode == "markers+text":
         trace["text"] = [label_map.get(t, t) for t in trace["text"]]
-        trace["marker"].update(size=10, line=dict(width=1, color="#111"))
-        # force the family here:
+        # bump node size & border
+        trace["marker"].update(size=12, line=dict(width=1.5, color="#111"))
+        # **increase font size here**
         tf = trace.setdefault("textfont", {})
         tf.update(
             family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
             color="#111",
-            size=11
+            size=14     # <-- larger labels
         )
     elif mode == "lines":
         trace["line"].update(width=2.5, color="rgba(30,30,30,0.7)")
-
 
 # hide grids & axes
 scene = fig_dict["layout"].get("scene", {})
@@ -139,23 +157,15 @@ for ax in ("xaxis","yaxis","zaxis"):
         showgrid=False, zeroline=False,
         showticklabels=False, title_text=""
     )
-scene.update(
-    bgcolor="rgba(0,0,0,0)",
-    camera=dict(eye=dict(x=1.5, y=1.5, z=1.2))
-)
+scene.update(bgcolor="rgba(0,0,0,0)",
+             camera=dict(eye=dict(x=1.5, y=1.5, z=1.2)))
 
-# —————————————————————————————————————————————————————————————————————
-# 3) Global Plotly font settings + transparent backgrounds
+# 4) Global Plotly font + transparent backgrounds
 layout = fig_dict["layout"]
 layout.update(
     font=dict(
         family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
         color="#111"
-    ),
-    title=dict(
-        text="Interactive SVNet of Neurological Comorbidities in COVID-19",
-        x=0.5, xanchor="center",
-        font=dict(size=20)
     ),
     paper_bgcolor="rgba(0,0,0,0)",
     plot_bgcolor="rgba(0,0,0,0)",
@@ -166,14 +176,13 @@ layout.update(
         x=0.02, y=0.98,
         font=dict(size=12)
     ),
-    margin=dict(l=0, r=0, t=60, b=0)
+    margin=dict(l=0, r=0, t=0, b=0)
 )
 
 # —————————————————————————————————————————————————————————————————————
-# 4) Render
+# 5) Render
 fig = go.Figure(fig_dict)
 st.plotly_chart(fig, use_container_width=True, theme=None)
-
 # --- after your st.plotly_chart(...) call ---
 
 # 5) Methodology & Key Findings (fancy Apple-style panel)
