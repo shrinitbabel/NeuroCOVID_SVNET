@@ -2,27 +2,43 @@ import streamlit as st
 import json
 import plotly.graph_objects as go
 
+# —————————————————————————————————————————————————————————————————————
+# 1) Page setup with animated gradient background
 st.set_page_config(
     page_title="NeuroCOVID Network Navigator",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
+
 st.markdown(
     """
     <style>
-      .reportview-container, .main .block-container {
-        background-color: #FFFFFF;
-      }
+    /* full-screen animated gradient */
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .reportview-container, .main .block-container {
+      background: linear-gradient(-45deg, #e0f7fa, #80deea, #4dd0e1, #26c6da);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+    }
+    /* make the Streamlit header area transparent */
+    header, footer, .css-1avcm0n { background: transparent !important; }
     </style>
     """,
     unsafe_allow_html=True
 )
+
 st.title("NeuroCOVID Network Navigator")
 
+# —————————————————————————————————————————————————————————————————————
+# 2) Load & prep the SVNet JSON
 with open("neurocovid_svnet.json") as f:
     fig_dict = json.load(f)
-
 fig_dict["layout"].pop("template", None)
+
 
 # 2) Full mapping from internal codes → human labels
 label_map = {
@@ -86,48 +102,45 @@ label_map = {
     "com_neurm_ty_myop":      "Myopathy",
 }
 
-
 for trace in fig_dict["data"]:
     mode = trace.get("mode")
     if mode == "markers+text":
         trace["text"] = [label_map.get(t, t) for t in trace["text"]]
-        trace["marker"].update(size=10, line=dict(width=1, color="#222"))
-        # <— safe textfont update
+        trace["marker"].update(size=10, line=dict(width=1, color="#111"))
         tf = trace.setdefault("textfont", {})
-        tf.update(color="#111111", size=11)
-
+        tf.update(color="#111", size=11)
     elif mode == "lines":
-        trace["line"].update(width=1.5, color="rgba(50,50,50,0.3)")
+        # much darker, thicker connections
+        trace["line"].update(width=2.5, color="rgba(30,30,30,0.7)")
 
+# hide grids & axes
 scene = fig_dict["layout"].get("scene", {})
 for ax in ("xaxis","yaxis","zaxis"):
-    if ax in scene:
-        scene[ax].update(
-            showgrid=False, zeroline=False,
-            showticklabels=False, title_text=""
-        )
-scene.update(
-    bgcolor="rgba(245,252,255,1)",
-    camera=dict(eye=dict(x=1.5, y=1.5, z=1.2))
-)
+    scene.get(ax, {}).update(showgrid=False, zeroline=False,
+                             showticklabels=False, title_text="")
+scene.update(bgcolor="rgba(0,0,0,0)",  # fully transparent
+             camera=dict(eye=dict(x=1.5, y=1.5, z=1.2)))
 
+# legend + plot transparent
 layout = fig_dict["layout"]
 layout.update(
-    paper_bgcolor="white",
+    paper_bgcolor="rgba(0,0,0,0)",
     plot_bgcolor="rgba(0,0,0,0)",
     legend=dict(
-        bgcolor="rgba(255,255,255,0.8)",
-        bordercolor="#DDD",
+        bgcolor="rgba(255,255,255,0.6)",
+        bordercolor="#CCC",
         borderwidth=1,
         x=0.02, y=0.98
     ),
-    margin=dict(l=0,r=0,t=60,b=0),
+    margin=dict(l=0, r=0, t=60, b=0),
     title=dict(
         text="Interactive SVNet of Neurological Comorbidities",
         x=0.5, xanchor="center",
-        font=dict(size=18, color="#222")
+        font=dict(size=20, color="#111")
     )
 )
 
+# —————————————————————————————————————————————————————————————————————
+# 3) Render!
 fig = go.Figure(fig_dict)
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, use_container_width=True, theme=None)
